@@ -1,0 +1,78 @@
+{
+    "env": {
+        "browser": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true // Allows for the parsing of JSX
+        }
+    },
+    "plugins": ["import"],
+    "extends": [
+        "eslint:recommended",
+        "google",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "ignorePatterns": ["build/*", "public/*"],
+    "rules": {
+        "curly": ["error", "all"],
+        "no-param-reassign": "off",
+        "no-return-assign": [
+            "error",
+            "except-parens"
+        ],
+        "react/react-in-jsx-scope": "off",
+        "padding-line-between-statements": ["error", { "blankLine": "always", "prev": "*", "next": "return" }],
+        "quotes": ["error", "single"],
+        "no-unused-expressions": ["error", { "allowShortCircuit": true }],
+        "prefer-destructuring": "off",
+        "react/require-default-props": "off",
+        "no-extend-native": "off",
+        "no-shadow": "off",
+        "require-jsdoc": "off",
+        "react/jsx-filename-extension": [1, {"extensions": [".jsx", ".tsx"]}],
+        "react/jsx-props-no-spreading": "off",
+        "react/jsx-one-expression-per-line": "off",
+        "react/forbid-prop-types": "off",
+        "react/destructuring-assignment": "off",
+        "react/prop-types": "off",
+        "react/jsx-curly-brace-presence": "off",
+        "react/display-name": "off",
+        "react/destructuing-assignment": "off",
+        "max-len": "off",
+        "no-multiple-empty-lines": ["error", { "max": 2 }],
+        "strict": 0,
+        "@typescript-eslint/no-unused-vars": "error",
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": ["error"],
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "never",
+                "jsx": "never",
+                "ts": "never",
+                "tsx": "never",
+                "mjs": "ever"
+            }
+        ]
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [
+                    ".js",
+                    ".jsx",
+                    ".ts",
+                    ".tsx",
+                    ".d.ts"
+                ]
+            }
+        }
+    }
+}
