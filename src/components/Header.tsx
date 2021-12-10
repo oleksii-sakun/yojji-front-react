@@ -1,11 +1,11 @@
 import {useNavigate} from 'react-router-dom';
 
-export const handleClearLocalStorage = () => {
+export const handleClearLocalStorage = (): void => {
   localStorage.removeItem('token');
   localStorage.removeItem('username');
   localStorage.removeItem('userId');
 };
-export const Header = ()=> {
+export const Header = (): JSX.Element=> {
   const routes = [
     {name: 'Projects', path: 'http://localhost:3000/projects'},
     {name: 'Billing', path: 'http://localhost:3000/billing'},
@@ -33,8 +33,8 @@ export const Header = ()=> {
               route.path === window.location.href ? 'nav-link active aria-current="page"' : 'nav-link'} >{route.name}</a></li>);
           })}
         </ul>
-        <button type="button" className="btn btn-info btn-sm">Profile</button>
-        <button onClick={handleLogout} type="button" className="btn btn btn-danger btn-sm">Log out</button>
+        <button type="button" className="btn btn-info btn-sm btn-square m-1"><a href={'http://localhost:3000/profile'} className='link-not-decorated'>Profile</a></button>
+        <button onClick={handleLogout} type="button" className="btn btn btn-danger btn-sm btn-square">Log out</button>
       </header>
     </div>
   );

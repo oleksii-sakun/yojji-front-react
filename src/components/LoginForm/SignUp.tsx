@@ -2,33 +2,10 @@ import {useFormik} from 'formik';
 import axios from 'axios';
 import {toast} from 'react-toastify';
 import React from 'react';
+import * as Yup from 'yup';
 
 export const SignUp = ( {toggleForm}): JSX.Element=> {
   const singUpUrl = 'http://localhost:5000/auth/signUp';
-  const validate = (values) => {
-    const errors = {};
-
-    if (!values.username) {
-      errors['username'] = 'Required';
-    } else if (!/^[a-zA-Zа-яА-ЯёЁ'][a-zA-Z-а-яА-ЯёЁ' ]+[a-zA-Zа-яА-ЯёЁ']?$/.test(values.username)) {
-      errors['username'] = 'Invalid username';
-    }
-
-    if (!values.password) {
-      errors['password'] = 'Required';
-    } else if (!/(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{6,}/g.test(values.password)) {
-      errors['password'] = 'Invalid password';
-    }
-
-    if (!values.email) {
-      errors['email'] = 'Required';
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-      errors['email'] = 'Invalid email address';
-    }
-    console.log('errors');
-
-    return errors;
-  };
 
   const formikForSingUp = useFormik(
       {
@@ -37,7 +14,19 @@ export const SignUp = ( {toggleForm}): JSX.Element=> {
           email: '',
           password: '',
         },
-        validate,
+        validationSchema: Yup.object({
+          username: Yup.string()
+              .min(2, 'Short username')
+              .max(50, 'Must be a string')
+              .required('Required'),
+          password: Yup.string()
+              .min(4, 'Short password')
+              .max(32, 'Too long password')
+              .required('Required'),
+          email: Yup.string()
+              .email('Must be a valid email')
+              .required('Required'),
+        }),
         onSubmit: (values) => {
           axios.post(singUpUrl, values)
               .then(() => {

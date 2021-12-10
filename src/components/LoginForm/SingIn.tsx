@@ -1,10 +1,11 @@
 import {useFormik} from 'formik';
 import axios from 'axios';
 import {toast} from 'react-toastify';
-import React, {useEffect} from 'react';
+import React from 'react';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
 import {useNavigate} from 'react-router-dom';
+import * as Yup from 'yup';
 
 interface LoggedUserI {
   username: string
@@ -15,36 +16,26 @@ export const SignIn = ({toggleForm}): JSX.Element => {
   const singInURl = 'http://localhost:5000/auth/signIn';
   const navigate = useNavigate();
 
-  const isSinged = localStorage.getItem('token');
+  // const isSinged = localStorage.getItem('token');
 
-  useEffect(()=> {
-    if (!isSinged) {
-      navigate('projects');
-    }
-  }, [isSinged]);
-
-  const validate = (values) => {
-    const errors = {};
-
-    if (!values.password) {
-      errors['password'] = 'Required';
-    }
-
-    if (!values.email) {
-      errors['email'] = 'Required';
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-      errors['email'] = 'Invalid email address';
-    }
-
-    return errors;
-  };
+  // useEffect(()=> {
+  //   if (!isSinged) {
+  //     navigate('projects');
+  //   }
+  // }, [isSinged]);
 
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
-    validate,
+    validationSchema: Yup.object({
+      password: Yup.string()
+          .required('Required'),
+      email: Yup.string()
+          .email('Must be a valid email')
+          .required('Required'),
+    }),
     onSubmit: (values) => {
       axios.post(singInURl, values)
           .then((res) => {
@@ -57,7 +48,7 @@ export const SignIn = ({toggleForm}): JSX.Element => {
             }
 
             navigate('/projects');
-            toast.success('Successful sing in');
+            toast.success('Successful sign in');
           })
           .catch((err) => {
             toast.error(`${err.response.data.message}`);

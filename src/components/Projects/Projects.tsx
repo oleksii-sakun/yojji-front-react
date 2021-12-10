@@ -6,20 +6,6 @@ import {useState} from 'react';
 import {AddProjectModal} from './AddProjectModal';
 import {RemoveProjectModal} from './RemoveProjectModal';
 
-
-export interface LinkI {
-  id: number
-  linkName: string
-  linkUrl: string
-}
-
-export interface ProjectI {
-  id: number
-  projectName: string;
-  projectWebsite: string;
-  links: LinkI[];
-}
-
 const customStyles = {
   content: {
     height: '350px',
@@ -71,7 +57,7 @@ export const Projects = (): JSX.Element => {
     }
   }
 
-  const handleRemoveProject = (projectId) => {
+  const handleRemoveProject = ( projectId?) => {
     setProjectToRemoveId(projectId);
     setRemoveProjectModalStatus(((prevState) => !prevState));
   };
@@ -106,17 +92,20 @@ export const Projects = (): JSX.Element => {
         <button onClick={handleSetModalStatus} type="button" className="btn btn-success">Add new project</button>
         {data.data.map((project)=>
           <div className="list-group m-2" key={project.id}>
-            <a href={`http://localhost:3000/projects/links/${project.id}`} className="list-group-item list-group-item-action" aria-current="true">
+            <div className="list-group-item list-group-item-action" aria-current="true">
               <div className="d-flex w-100 justify-content-between">
                 <h5 className="mb-1">{project.projectName}</h5>
                 <div className="d-flex flex-column">
                   <small>Total links: {project.links.length}</small>
-                  <button onClick={()=>handleRemoveProject(project.id)} type="button" className="btn btn-warning btn-sm"><i className="bi bi-trash">Remove</i></button>
+                  <button onClick={()=>handleRemoveProject( project.id)} type="button" className="btn btn-warning btn-sm"><span
+                    className="material-icons">
+delete
+                  </span></button>
                 </div>
               </div>
               <p className="mb-1">{project.projectWebsite}</p>
-              <small>And some small print.</small>
-            </a>
+              <button type="button" className="btn btn-info"><a href={`http://localhost:3000/projects/links/${project.id}`} style={{'color': 'black'}}>Go to project links</a></button>
+            </div>
           </div>)}
       </div>
     </>

@@ -11,19 +11,24 @@ import 'react-toastify/dist/ReactToastify.css';
 import {PrivateRoute} from './components/PrivateRoute';
 import {Billing} from './components/Billing';
 import {useEffect} from 'react';
-import {Links} from './components/Links';
+import {Links} from './components/Links/Links';
+import {LinkHistory} from './components/Links/LinkHistory';
+import {Profile} from './components/Profile/Profile';
 
 
 // Create a client
 const queryClient = new QueryClient();
 
-const App = () => {
+const App = (): JSX.Element => {
   const navigator = useNavigate();
+
   const isSinged = localStorage.getItem('token');
 
   useEffect(()=> {
     if (!isSinged) {
       navigator('/');
+    } else if (isSinged && window.location.href === 'http://localhost:3000/') {
+      navigator('projects');
     }
   }, [isSinged]);
 
@@ -55,8 +60,18 @@ const App = () => {
           />
 
           <Route
+            path="profile"
+            element={<PrivateRoute isLogged={isSinged} component={Profile} />}
+          />
+
+          <Route
             path="projects/links/:id"
             element={<PrivateRoute isLogged={isSinged} component={Links} />}
+          />
+
+          <Route
+            path="linkhistory/:id"
+            element={<PrivateRoute isLogged={isSinged} component={LinkHistory} />}
           />
         </Routes>
 

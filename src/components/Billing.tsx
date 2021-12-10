@@ -1,6 +1,6 @@
 import {Header} from './Header';
 
-export const Billing = ()=> {
+export const Billing = (): JSX.Element=> {
   return (
     <>
       <Header/>

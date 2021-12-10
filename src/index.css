@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.btn-square { border-radius: 50%; }
+
+.link-not-decorated {
+  text-decoration: none;
+  outline: none;
+  color: whitesmoke;
+}

@@ -1,46 +1,48 @@
-import Modal from 'react-modal';
 import {useFormik} from 'formik';
+import * as Yup from 'yup';
+import {CreateLinkI} from '../interfaces';
 import axios from 'axios';
 import {toast} from 'react-toastify';
 import React from 'react';
-import * as Yup from 'yup';
-import {CreateProjectI} from '../interfaces';
+import Modal from 'react-modal';
 
 
-interface AddProjectModalPropsI {
+interface AddLinkModalPropsI {
   modalIsOpen: boolean
   afterOpenModal: ()=>void
   closeModal: ()=>void
   customStyles:any
+  projectId: number
 }
 
 
-const projectsUrl ='http://localhost:5000/projects/';
+const linksUrl ='http://localhost:5000/links/';
 
-export const AddProjectModal = ({modalIsOpen, afterOpenModal, closeModal, customStyles}: AddProjectModalPropsI): JSX.Element=> {
+export const AddLinkModal = ({modalIsOpen, afterOpenModal, closeModal, customStyles, projectId}: AddLinkModalPropsI): JSX.Element=> {
   const token = localStorage.getItem('token');
-  const currentUserId = Number(localStorage.getItem('userId'));
+  console.log(projectId);
+  console.log(typeof projectId);
   const formik = useFormik(
       {
         initialValues: {
-          projectName: '',
-          projectWebsite: '',
+          linkName: '',
+          linkUrl: '',
         },
         validationSchema: Yup.object({
-          projectName: Yup.string()
+          linkName: Yup.string()
               .max(50, 'Must be a string')
               .required('Required'),
-          projectWebsite: Yup.string()
+          linkUrl: Yup.string()
               .url('Must be a valid url')
               .required('Required'),
         }),
         onSubmit: (values) => {
-          const newProject: CreateProjectI = {
-            ...values, author: currentUserId,
+          const newLink: CreateLinkI = {
+            ...values, project: projectId,
           };
-          axios.post(projectsUrl, newProject, {headers: {Authorization: `Bearer ${token}`}})
+          axios.post(linksUrl, newLink, {headers: {Authorization: `Bearer ${token}`}})
               .then(() => {
-                toast.success('New project successfully created.');
+                toast.success('New link successfully added to project.');
                 closeModal();
               })
               .catch((err) => {
@@ -59,42 +61,43 @@ export const AddProjectModal = ({modalIsOpen, afterOpenModal, closeModal, custom
         onRequestClose={closeModal}
         style={customStyles}
         ariaHideApp={false}
+        contentLabel="Example Modal"
       >
-        <h5>Create new project</h5>
+        <h5>Create new link</h5>
 
         <form onSubmit={formik.handleSubmit}>
           <div className="d-flex w-100 mt-3 justify-content-between flex-column">
-            <label className='mt-3' htmlFor="projectName">Project name</label>
+            <label className='mt-3' htmlFor="linkName">Link name</label>
             <input
               className='mt-3'
-              id="projectName"
-              name="projectName"
+              id="linkName"
+              name="linkName"
               type="text"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.projectName}
+              value={formik.values.linkName}
             />
-            {formik.touched.projectName && formik.errors.projectName ? (
-              <div>{formik.errors.projectName}</div>
+            {formik.touched.linkName && formik.errors.linkName ? (
+              <div>{formik.errors.linkName}</div>
             ) : null}
-            <label className='mt-3' htmlFor="projectWebsite">Project website</label>
+            <label className='mt-3' htmlFor="linkUrl">Link url</label>
             <input
               className='mt-3'
-              id="projectWebsite"
+              id="linkUrl"
               type="text"
-              name="projectWebsite"
+              name="linkUrl"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.projectWebsite}
+              value={formik.values.linkUrl}
             />
-            {formik.touched.projectWebsite && formik.errors.projectWebsite ? (
-              <div>{formik.errors.projectWebsite}</div>
+            {formik.touched.linkUrl && formik.errors.linkUrl ? (
+              <div>{formik.errors.linkUrl}</div>
             ) : null}
           </div>
 
           <div className="d-flex w-100 justify-content-between m-2">
             <button onClick={closeModal} type="button" className="btn btn btn-danger">Close</button>
-            <button type="submit" className="btn btn-success">Create project</button>
+            <button type="submit" className="btn btn-success">Create link</button>
           </div>
 
         </form>
