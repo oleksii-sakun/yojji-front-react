@@ -1,10 +1,12 @@
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
-import {CreateLinkI} from '../interfaces';
-import axios from 'axios';
-import {toast} from 'react-toastify';
+import {CreateLinkI, ResponseErrorI} from './interfaces';
 import React from 'react';
 import Modal from 'react-modal';
+import {addLinkReq} from '../api/requests';
+import {useMutation} from 'react-query';
+import {toast} from 'react-toastify';
+import {queryClient} from '../App';
 
 
 interface AddLinkModalPropsI {
@@ -16,12 +18,20 @@ interface AddLinkModalPropsI {
 }
 
 
-const linksUrl ='http://localhost:5000/links/';
-
 export const AddLinkModal = ({modalIsOpen, afterOpenModal, closeModal, customStyles, projectId}: AddLinkModalPropsI): JSX.Element=> {
-  const token = localStorage.getItem('token');
-  console.log(projectId);
-  console.log(typeof projectId);
+  const addLinkMutation = useMutation(addLinkReq, {
+    onSuccess: ()=> {
+      toast.success('New link successfully added to project.');
+      queryClient.invalidateQueries('projectLinks');
+      closeModal();
+    },
+    onError: (error: ResponseErrorI)=> {
+      toast.error(`${error.response.data.message}`);
+    },
+
+  });
+
+
   const formik = useFormik(
       {
         initialValues: {
@@ -40,15 +50,8 @@ export const AddLinkModal = ({modalIsOpen, afterOpenModal, closeModal, customSty
           const newLink: CreateLinkI = {
             ...values, project: projectId,
           };
-          axios.post(linksUrl, newLink, {headers: {Authorization: `Bearer ${token}`}})
-              .then(() => {
-                toast.success('New link successfully added to project.');
-                closeModal();
-              })
-              .catch((err) => {
-                console.log(err);
-                toast.error(`${err.response.data.message}`);
-              });
+          // add link req
+          addLinkMutation.mutate(newLink);
         },
       },
   );

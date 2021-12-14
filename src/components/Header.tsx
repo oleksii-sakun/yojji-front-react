@@ -1,10 +1,7 @@
 import {useNavigate} from 'react-router-dom';
+import {handleClearLocalStorage} from '../utils';
 
-export const handleClearLocalStorage = (): void => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('username');
-  localStorage.removeItem('userId');
-};
+
 export const Header = (): JSX.Element=> {
   const routes = [
     {name: 'Projects', path: 'http://localhost:3000/projects'},

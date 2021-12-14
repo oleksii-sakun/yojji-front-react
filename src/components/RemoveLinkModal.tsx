@@ -1,7 +1,10 @@
 import React from 'react';
 import Modal from 'react-modal';
-import axios from 'axios';
+import {removeLinkReq} from '../api/requests';
+import {useMutation} from 'react-query';
 import {toast} from 'react-toastify';
+import {ResponseErrorI} from './interfaces';
+import {queryClient} from '../App';
 
 
 interface RemoveLinkModalPropsI {
@@ -12,20 +15,22 @@ interface RemoveLinkModalPropsI {
   linkToRemoveId: number
 }
 
-const linksUrl ='http://localhost:5000/links/';
 
 export const RemoveLinkModal = ({modalIsOpen, afterOpenModal, closeModal, customStyles, linkToRemoveId}: RemoveLinkModalPropsI): JSX.Element=> {
-  const token = localStorage.getItem('token');
+  const removeLinkMutation = useMutation(removeLinkReq, {
+    onSuccess: ()=> {
+      toast.success(`Link with id: ${linkToRemoveId}successfully removed.`);
+      queryClient.invalidateQueries('projectLinks');
+      closeModal(null);
+    },
+    onError: (error: ResponseErrorI)=> {
+      toast.error(`${error.response.data.message}`);
+    },
+  });
+
+
   const handleRemoveModal = ()=> {
-    axios.delete(`${linksUrl}${linkToRemoveId}`, {headers: {Authorization: `Bearer ${token}`}})
-        .then(() => {
-          toast.success(`Link with id: ${linkToRemoveId}successfully removed.`);
-          closeModal(null);
-        })
-        .catch((err) => {
-          console.log(err);
-          toast.error(`${err.response.data.message}`);
-        });
+    removeLinkMutation.mutate(linkToRemoveId);
   };
 
   return (

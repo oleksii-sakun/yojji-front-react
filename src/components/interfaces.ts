@@ -30,3 +30,15 @@ export interface CreateLinkI {
   linkUrl: string;
   project: number;
 }
+
+
+export interface LoggedUserI {
+  username: string
+  userId: number
+}
+
+export interface ResponseErrorI {
+    response:{
+    data:{
+      message: string}}
+}

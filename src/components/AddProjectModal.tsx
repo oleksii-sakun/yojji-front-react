@@ -1,10 +1,12 @@
 import Modal from 'react-modal';
 import {useFormik} from 'formik';
-import axios from 'axios';
-import {toast} from 'react-toastify';
 import React from 'react';
 import * as Yup from 'yup';
-import {CreateProjectI} from '../interfaces';
+import {CreateProjectI} from './interfaces';
+import {useMutation} from 'react-query';
+import {addProjectReq} from '../api/requests';
+import {toast} from 'react-toastify';
+import {queryClient} from '../App';
 
 
 interface AddProjectModalPropsI {
@@ -14,12 +16,21 @@ interface AddProjectModalPropsI {
   customStyles:any
 }
 
-
-const projectsUrl ='http://localhost:5000/projects/';
-
 export const AddProjectModal = ({modalIsOpen, afterOpenModal, closeModal, customStyles}: AddProjectModalPropsI): JSX.Element=> {
-  const token = localStorage.getItem('token');
   const currentUserId = Number(localStorage.getItem('userId'));
+
+
+  const mutation = useMutation(addProjectReq, {
+    onSuccess: () => {
+      toast.success('New project successfully created.');
+      queryClient.invalidateQueries('usersProjects');
+      closeModal();
+    },
+    onError: (error: {response:{data:{message: string}}})=> {
+      toast.error(`${error.response.data.message}`);
+    },
+  });
+
   const formik = useFormik(
       {
         initialValues: {
@@ -38,15 +49,8 @@ export const AddProjectModal = ({modalIsOpen, afterOpenModal, closeModal, custom
           const newProject: CreateProjectI = {
             ...values, author: currentUserId,
           };
-          axios.post(projectsUrl, newProject, {headers: {Authorization: `Bearer ${token}`}})
-              .then(() => {
-                toast.success('New project successfully created.');
-                closeModal();
-              })
-              .catch((err) => {
-                console.log(err);
-                toast.error(`${err.response.data.message}`);
-              });
+
+          mutation.mutate(newProject);
         },
       },
   );

@@ -1,28 +1,38 @@
 import {useFormik} from 'formik';
-import axios from 'axios';
-import {toast} from 'react-toastify';
 import React from 'react';
+import * as Yup from 'yup';
+import {signInReq} from '../../api/requests';
+import {useNavigate} from 'react-router-dom';
+import {useMutation} from 'react-query';
+import {LoggedUserI, ResponseErrorI} from '../interfaces';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
-import {useNavigate} from 'react-router-dom';
-import * as Yup from 'yup';
+import {toast} from 'react-toastify';
 
-interface LoggedUserI {
-  username: string
-  userId: number
-}
 
-export const SignIn = ({toggleForm}): JSX.Element => {
-  const singInURl = 'http://localhost:5000/auth/signIn';
+export const SignIn = ({onSelect}): JSX.Element => {
   const navigate = useNavigate();
 
-  // const isSinged = localStorage.getItem('token');
 
-  // useEffect(()=> {
-  //   if (!isSinged) {
-  //     navigate('projects');
-  //   }
-  // }, [isSinged]);
+  const signInMutation = useMutation(signInReq, {
+    onSuccess: (res) => {
+      if (res.data.access_token) {
+        const user: LoggedUserI = jwt_decode(res.data.access_token);
+
+        localStorage.setItem('token', res.data.access_token);
+        localStorage.setItem('username', user.username);
+        localStorage.setItem('userId', user.userId.toString());
+      }
+
+      navigate('/projects');
+      toast.success('Successful sign in');
+    },
+
+    onError: ((error: ResponseErrorI) => {
+      toast.error(`${error.response.data.message}`);
+    }),
+  });
+
 
   const formik = useFormik({
     initialValues: {
@@ -37,32 +47,19 @@ export const SignIn = ({toggleForm}): JSX.Element => {
           .required('Required'),
     }),
     onSubmit: (values) => {
-      axios.post(singInURl, values)
-          .then((res) => {
-            if (res.data.access_token) {
-              const user: LoggedUserI = jwt_decode(res.data.access_token);
-
-              localStorage.setItem('token', res.data.access_token);
-              localStorage.setItem('username', user.username);
-              localStorage.setItem('userId', user.userId.toString());
-            }
-
-            navigate('/projects');
-            toast.success('Successful sign in');
-          })
-          .catch((err) => {
-            toast.error(`${err.response.data.message}`);
-          });
+      signInMutation.mutate(values);
     },
   });
 
   return (
     <div className="user signinBx">
-      <div className="imgBx"><img
-        src="https://raw.githubusercontent.com/WoojinFive/CSS_Playground/master/Responsive%20Login%20and%20Registration%20Form/img1.jpg"
-        alt=""
-      />
+      <div className="imgBx">
+        <img
+          src="https://raw.githubusercontent.com/WoojinFive/CSS_Playground/master/Responsive%20Login%20and%20Registration%20Form/img1.jpg"
+          alt=""
+        />
       </div>
+
       <div className="formBx">
         <form onSubmit={formik.handleSubmit}>
           <h2>Sign In</h2>
@@ -94,7 +91,7 @@ export const SignIn = ({toggleForm}): JSX.Element => {
           <p className="signup">
             {/* eslint-disable-next-line react/no-unescaped-entities */}
             Don't have an account ?
-            <a href="#" onClick={toggleForm}>Sign Up.</a>
+            <a href="#" onClick={onSelect}>Sign Up.</a>
           </p>
         </form>
       </div>

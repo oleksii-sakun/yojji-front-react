@@ -1,42 +1,25 @@
+import {Header} from '../components/Header';
 import {useQuery} from 'react-query';
-import axios from 'axios';
-import {toast} from 'react-toastify';
-import {handleClearLocalStorage, Header} from '../Header';
-
-
-const linksUrl = 'http://localhost:5000/links/';
+import {getLinkByIdReq} from '../api/requests';
+import {LoadingSpinner} from '../components/LoadingSpinner';
+import {useParams} from 'react-router';
 
 export const LinkHistory = (): JSX.Element=> {
-  const currentPage = window.location.href;
-  const parsed = currentPage.split('/');
-  const linkId = parsed[parsed.indexOf('linkhistory') + 1];
+  const {id: linkId} = useParams();
 
 
-  const token = localStorage.getItem('token');
-  const {isLoading, error, data} = useQuery('projectLinks',
-      () => axios.get(`${linksUrl}${linkId}`, {headers: {Authorization: `Bearer ${token}`}}),
+  const {isLoading, error, data} = useQuery('getLinkHistoryById',
+      ()=>getLinkByIdReq(linkId),
   );
 
-  console.log(data);
   if (error) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (error.response.data.message === UNAUTHORIZED) {
-      toast.error('Please login to App');
-      handleClearLocalStorage();
-    }
+    console.log(error);
   }
+
 
   if (isLoading) {
     return (
-      <>
-        <Header/>
-        <div className="d-flex justify-content-center">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </>
+      <LoadingSpinner/>
     );
   }
 

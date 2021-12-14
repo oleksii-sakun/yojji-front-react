@@ -1,12 +1,20 @@
 import {useFormik} from 'formik';
-import axios from 'axios';
-import {toast} from 'react-toastify';
 import React from 'react';
 import * as Yup from 'yup';
+import {signUpReq} from '../../api/requests';
+import {useMutation} from 'react-query';
+import {toast} from 'react-toastify';
+import {ResponseErrorI} from '../interfaces';
 
-export const SignUp = ( {toggleForm}): JSX.Element=> {
-  const singUpUrl = 'http://localhost:5000/auth/signUp';
-
+export const SignUp = ( {onSelect}): JSX.Element=> {
+  const signUpMutation = useMutation(signUpReq, {
+    onSuccess: () => {
+      toast.success('Successful sing up. Confirm your email.');
+    },
+    onError: (err: ResponseErrorI) => {
+      toast.error(`${err.response.data.message}`);
+    },
+  });
   const formikForSingUp = useFormik(
       {
         initialValues: {
@@ -28,14 +36,7 @@ export const SignUp = ( {toggleForm}): JSX.Element=> {
               .required('Required'),
         }),
         onSubmit: (values) => {
-          axios.post(singUpUrl, values)
-              .then(() => {
-                toast.success('Successful sing up. Confirm your email.');
-              })
-              .catch((err) => {
-                console.log(err);
-                toast.error(`${err.response.data.message}`);
-              });
+          signUpMutation.mutate(values);
         },
       },
   );
@@ -81,11 +82,10 @@ export const SignUp = ( {toggleForm}): JSX.Element=> {
           {formikForSingUp.touched.password && formikForSingUp.errors.password ? (
             <div className="errors">{formikForSingUp.errors.password}</div>
           ) : null}
-          {/* <input type="password" name="" placeholder="Confirm Password"/> */}
           <input type="submit" value="Sign Up" />
           <p className="signup">
             Already have an account ?
-            <a href="#" onClick={toggleForm}>Sign in.</a>
+            <a href="#" onClick={onSelect}>Sign in.</a>
           </p>
         </form>
       </div>

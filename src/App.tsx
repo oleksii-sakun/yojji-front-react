@@ -5,19 +5,21 @@ import {
   QueryClientProvider,
 } from 'react-query';
 import {ToastContainer} from 'react-toastify';
-import {Projects} from './components/Projects/Projects';
-import {LoginPage} from './components/LoginForm/LoginPage';
+import {Projects} from './pages/Projects';
+import {LoginPage} from './pages/LoginPage';
 import 'react-toastify/dist/ReactToastify.css';
 import {PrivateRoute} from './components/PrivateRoute';
-import {Billing} from './components/Billing';
+import {Billing} from './pages/Billing';
 import {useEffect} from 'react';
-import {Links} from './components/Links/Links';
-import {LinkHistory} from './components/Links/LinkHistory';
-import {Profile} from './components/Profile/Profile';
+import {Links} from './pages/Links';
+import {LinkHistory} from './pages/LinkHistory';
+import {Profile} from './pages/Profile';
+import {ReactQueryDevtools} from 'react-query/devtools';
+import React from 'react';
 
 
 // Create a client
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 const App = (): JSX.Element => {
   const navigator = useNavigate();
@@ -73,9 +75,11 @@ const App = (): JSX.Element => {
             path="linkhistory/:id"
             element={<PrivateRoute isLogged={isSinged} component={LinkHistory} />}
           />
+
         </Routes>
 
       </div>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };

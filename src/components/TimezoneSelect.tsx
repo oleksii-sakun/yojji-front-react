@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import ct from 'countries-and-timezones';
 import Select from 'react-select';
-import axios from 'axios';
+import {setUserTimezoneReq} from '../api/requests';
+import {useMutation} from 'react-query';
 import {toast} from 'react-toastify';
-import {userUrl} from './Profile';
+import {queryClient} from '../App';
+import {ResponseErrorI} from './interfaces';
 
 export const TimezoneSelector = ({user}) => {
-  const token = localStorage.getItem('token');
   const [selectedTimezone, setSelectedTimezone] = useState({value: 'select', label: 'Select your timezone'});
 
   useEffect(()=> {
@@ -15,33 +16,33 @@ export const TimezoneSelector = ({user}) => {
     }
   }, [user]);
 
+
+  const setTimezoneMutation = useMutation(()=>setUserTimezoneReq(selectedTimezone.value, user.id), {
+
+    onSuccess: ()=> {
+      toast.success('Timezone successfully saved.');
+      queryClient.invalidateQueries('userInfo');
+    },
+
+    onError: (error: ResponseErrorI)=> {
+      toast.error(`${error.response.data.message}`);
+    },
+  });
+
   const timezones = ct.getAllTimezones();
   const timezonesValues = Object.values(timezones);
 
   const handleChange = (selectedOption) => {
     setSelectedTimezone({
-      label: selectedOption.value,
-      value: selectedOption.label,
+      value: selectedOption.value,
+      label: selectedOption.label,
     });
   };
 
   const selectOptions = timezonesValues.map((country)=> ({value: country.name, label: country.name}));
-  // const currentSelectedTimezoneInfo = timezones[selectedTimezone.value];
-
 
   const handleSaveSelectedTimezone = ()=> {
-    if (selectedTimezone.value && selectedTimezone.value !== 'select') {
-      axios.post(`${userUrl}timezone/${user.id}`, {timezone: selectedTimezone.value}, {headers: {Authorization: `Bearer ${token}`}})
-          .then(() => {
-            toast.success('Timezone successfully saved.');
-          })
-          .catch((err) => {
-            console.log(err);
-            toast.error(`${err.response.data.message}`);
-          });
-    } else {
-      toast.error('Please select your timezone');
-    }
+    setTimezoneMutation.mutate();
   };
 
 
