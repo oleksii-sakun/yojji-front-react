@@ -1,10 +1,10 @@
 import React from 'react';
 import Modal from 'react-modal';
-import {removeLinkReq} from '../api/requests';
+import {removeLinkReq} from '../../api/requests';
 import {useMutation} from 'react-query';
 import {toast} from 'react-toastify';
-import {ResponseErrorI} from './interfaces';
-import {queryClient} from '../App';
+import {ResponseErrorI} from '../interfaces';
+import {queryClient} from '../../App';
 
 
 interface RemoveLinkModalPropsI {

@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import ct from 'countries-and-timezones';
 import Select from 'react-select';
-import {setUserTimezoneReq} from '../api/requests';
 import {useMutation} from 'react-query';
 import {toast} from 'react-toastify';
-import {queryClient} from '../App';
-import {ResponseErrorI} from './interfaces';
+import {queryClient} from '../../App';
+import {ResponseErrorI} from '../interfaces';
+import {setUserTimezoneReq} from '../../api/requests';
 
-export const TimezoneSelector = ({user}) => {
+export const TimezoneSelector = ({user}):JSX.Element => {
   const [selectedTimezone, setSelectedTimezone] = useState({value: 'select', label: 'Select your timezone'});
 
   useEffect(()=> {

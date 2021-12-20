@@ -1,7 +1,14 @@
+import {LinkI} from '../interfaces';
+
+interface LinkCardPropsI {
+  link: LinkI
+  handleRemoveLink: (id:number)=>void
+}
+
 export const LinkCard = ({
   link,
   handleRemoveLink,
-}) => {
+}:LinkCardPropsI): JSX.Element => {
   return (
     <div className="list-group m-2" >
       <div className="list-group-item list-group-item-action" aria-current="true">

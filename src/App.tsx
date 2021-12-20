@@ -1,5 +1,5 @@
 import './App.css';
-import {Route, Routes, useNavigate} from 'react-router-dom';
+import {BrowserRouter, Route, Routes, useNavigate} from 'react-router-dom';
 import {
   QueryClient,
   QueryClientProvider,
@@ -16,9 +16,9 @@ import {LinkHistory} from './pages/LinkHistory';
 import {Profile} from './pages/Profile';
 import {ReactQueryDevtools} from 'react-query/devtools';
 import React from 'react';
+import {Header} from './components/Header';
 
 
-// Create a client
 export const queryClient = new QueryClient();
 
 const App = (): JSX.Element => {
@@ -50,8 +50,10 @@ const App = (): JSX.Element => {
           pauseOnHover
         />
 
-        <Routes>
+        <Routes >
           <Route path="/" element={<LoginPage />} />
+
+
           <Route
             path="projects"
             element={<PrivateRoute isLogged={isSinged} component={Projects} />}

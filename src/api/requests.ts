@@ -1,28 +1,28 @@
-import {CreateProjectI} from '../components/interfaces';
+import {CreateLinkI, CreateProjectI} from '../components/interfaces';
 import {apiClient} from './api-client';
 
 
-const linksUrl ='http://localhost:5000/links/';
-const singUpUrl = 'http://localhost:5000/auth/signUp';
-const singInURl = 'http://localhost:5000/auth/signIn';
-const usersUrl = 'http://localhost:5000/users/';
-const projectsUrl ='http://localhost:5000/projects/';
+const linksUrl ='http://ec2-3-71-77-80.eu-central-1.compute.amazonaws.com/links/';
+const singUpUrl = 'http://ec2-3-71-77-80.eu-central-1.compute.amazonaws.com/auth/signUp';
+const singInURl = 'http://ec2-3-71-77-80.eu-central-1.compute.amazonaws.com/auth/signIn';
+const usersUrl = 'http://ec2-3-71-77-80.eu-central-1.compute.amazonaws.com/users/';
+const projectsUrl ='http://ec2-3-71-77-80.eu-central-1.compute.amazonaws.com/projects/';
 
 
-export const addLinkReq = (newLink)=> {
+export const addLinkReq = (newLink: CreateLinkI)=> {
   return apiClient.post(linksUrl, newLink);
 };
 
-export const getLinkByIdReq = (linkId)=> {
+export const getLinkByIdReq = (linkId: number)=> {
   return apiClient.get(`${linksUrl}${linkId}`);
 };
 
-export const getLinkByProjectIdReq = (projectId) => {
+export const getLinkByProjectIdReq = (projectId: number) => {
   return apiClient.get(`${linksUrl}byprojectid/${projectId}`);
 };
 
 
-export const removeLinkReq = (linkToRemoveId)=> {
+export const removeLinkReq = (linkToRemoveId: number)=> {
   return apiClient.delete(`${linksUrl}${linkToRemoveId}`);
 };
 
@@ -34,7 +34,7 @@ export const signInReq = (values)=> {
   return apiClient.post(singInURl, values);
 };
 
-export const getUserInfoReq = (userId)=> {
+export const getUserInfoReq = (userId: number)=> {
   return apiClient.get(`${usersUrl}${userId}`);
 };
 
@@ -46,7 +46,7 @@ export const addProjectReq = (newProject: CreateProjectI)=> {
   return apiClient.post(projectsUrl, newProject );
 };
 
-export const getProjectsByUserIdReq = (userId)=> {
+export const getProjectsByUserIdReq = (userId: number)=> {
   return apiClient.get(`${projectsUrl}byuserid/${userId}`);
 };
 

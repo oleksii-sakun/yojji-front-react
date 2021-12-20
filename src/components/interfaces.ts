@@ -39,6 +39,13 @@ export interface LoggedUserI {
 
 export interface ResponseErrorI {
     response:{
+      status: number
     data:{
       message: string}}
+}
+
+export interface UseQueryI {
+  isLoading: boolean
+  error: ResponseErrorI
+  data: any
 }

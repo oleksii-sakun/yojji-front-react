@@ -1,11 +1,12 @@
 import {useState} from 'react';
-import {AddProjectModal} from '../components/AddProjectModal';
-import {RemoveProjectModal} from '../components/RemoveProjectModal';
+import {AddProjectModal} from '../components/ComposedComponents/AddProjectModal';
+import {RemoveProjectModal} from '../components/ComposedComponents/RemoveProjectModal';
 import {Header} from '../components/Header';
 import {useQuery} from 'react-query';
 import {getProjectsByUserIdReq} from '../api/requests';
 import {LoadingSpinner} from '../components/LoadingSpinner';
-import {ProjectCard} from '../components/ProjectCard';
+import {ProjectCard} from '../components/ComposedComponents/ProjectCard';
+import {Error} from '../components/ComposedComponents/Error/Error';
 
 const customStyles = {
   content: {
@@ -37,26 +38,26 @@ const customStylesForRemoveProjectModal = {
 
 
 export const Projects = (): JSX.Element => {
-  const [modalStatus, setModalStatus] = useState(false);
-  const [removeProjectModalStatus, setRemoveProjectModalStatus] = useState(false);
+  const [addProjectModalStatus, setAddProjectModalStatus] = useState(false);
   const [projectToRemoveId, setProjectToRemoveId] = useState(null);
 
   const userId = localStorage.getItem('userId');
 
-  const {isLoading, error, data} = useQuery('usersProjects', ()=>getProjectsByUserIdReq(userId));
+  const {isLoading, error, data} = useQuery('usersProjects', ()=>getProjectsByUserIdReq(Number(userId)));
 
 
   if (error) {
-    console.log(error);
+    return (
+      <Error error={error}/>
+    );
   }
 
   const handleRemoveProject = (projectId) => {
     setProjectToRemoveId(projectId);
-    setRemoveProjectModalStatus(((prevState) => !prevState));
   };
 
   const handleSetModalStatus = ()=> {
-    setModalStatus(((prevState) => !prevState));
+    setAddProjectModalStatus(((prevState) => !prevState));
   };
 
   if (isLoading) {
@@ -81,14 +82,14 @@ export const Projects = (): JSX.Element => {
           />,
         ) : null}
       </div>
-      <RemoveProjectModal modalIsOpen = {removeProjectModalStatus}
+      <RemoveProjectModal modalIsOpen = {projectToRemoveId}
         afterOpenModal = {null}
         closeModal={handleRemoveProject}
         customStyles={customStylesForRemoveProjectModal}
         projectToRemoveId = {projectToRemoveId}
       />
 
-      <AddProjectModal modalIsOpen = {modalStatus}
+      <AddProjectModal modalIsOpen = {addProjectModalStatus}
         afterOpenModal = {null}
         closeModal={handleSetModalStatus}
         customStyles={customStyles}/>

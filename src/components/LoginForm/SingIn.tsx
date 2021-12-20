@@ -1,4 +1,4 @@
-import {useFormik} from 'formik';
+import {Formik, Form} from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
 import {signInReq} from '../../api/requests';
@@ -8,6 +8,7 @@ import {LoggedUserI, ResponseErrorI} from '../interfaces';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
 import {toast} from 'react-toastify';
+import {FormInput} from '../Input';
 
 
 export const SignIn = ({onSelect}): JSX.Element => {
@@ -18,7 +19,7 @@ export const SignIn = ({onSelect}): JSX.Element => {
     onSuccess: (res) => {
       if (res.data.access_token) {
         const user: LoggedUserI = jwt_decode(res.data.access_token);
-
+        console.log('res', res);
         localStorage.setItem('token', res.data.access_token);
         localStorage.setItem('username', user.username);
         localStorage.setItem('userId', user.userId.toString());
@@ -34,24 +35,8 @@ export const SignIn = ({onSelect}): JSX.Element => {
   });
 
 
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    validationSchema: Yup.object({
-      password: Yup.string()
-          .required('Required'),
-      email: Yup.string()
-          .email('Must be a valid email')
-          .required('Required'),
-    }),
-    onSubmit: (values) => {
-      signInMutation.mutate(values);
-    },
-  });
-
   return (
+
     <div className="user signinBx">
       <div className="imgBx">
         <img
@@ -61,39 +46,35 @@ export const SignIn = ({onSelect}): JSX.Element => {
       </div>
 
       <div className="formBx">
-        <form onSubmit={formik.handleSubmit}>
-          <h2>Sign In</h2>
-          <label htmlFor="email">Email Address</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.email}
-          />
-          {formik.touched.email && formik.errors.email ? (
-            <div className="errors">{formik.errors.email}</div>
-          ) : null}
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            name="password"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.password}
-          />
-          {formik.touched.password && formik.errors.password ? (
-            <div className="errors">{formik.errors.password}</div>
-          ) : null}
-          <input type="submit" value="Login" />
-          <p className="signup">
-            {/* eslint-disable-next-line react/no-unescaped-entities */}
-            Don't have an account ?
-            <a href="#" onClick={onSelect}>Sign Up.</a>
-          </p>
-        </form>
+        <Formik
+          initialValues={{
+            email: '',
+            password: '',
+          }}
+          validationSchema={Yup.object({
+            password: Yup.string()
+                .required('Required'),
+            email: Yup.string()
+                .email('Must be a valid email')
+                .required('Required'),
+          })}
+          onSubmit={(values) => {
+            signInMutation.mutate(values);
+          }
+          }
+        >
+          <Form>
+            <h2>Sign In</h2>
+            <FormInput name="email" label ='email' type='email' />
+            <FormInput name="password" type="password" label="password" />
+            <input type="submit" value={'Login'}/>
+            <p className="signup">
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
+                    Don't have an account ?
+              <a href="#" onClick={onSelect}>Sign Up.</a>
+            </p>
+          </Form>
+        </Formik>
       </div>
     </div>
   );

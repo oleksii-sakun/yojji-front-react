@@ -1,19 +1,22 @@
 import {Header} from '../components/Header';
-import {TimezoneSelector} from '../components/TimezoneSelect';
+import {TimezoneSelector} from '../components/ComposedComponents/TimezoneSelect';
 import {useQuery} from 'react-query';
 import {getUserInfoReq} from '../api/requests';
 import {LoadingSpinner} from '../components/LoadingSpinner';
+import {Error} from '../components/ComposedComponents/Error/Error';
 
 
-export const Profile = () => {
+export const Profile = ():JSX.Element => {
   const userId = localStorage.getItem('userId');
 
   const {isLoading, error, data} = useQuery('userInfo',
-      ()=>getUserInfoReq(userId),
+      ()=>getUserInfoReq(Number(userId)),
   );
 
   if (error) {
-    console.log(error);
+    return (
+      <Error error={error}/>
+    );
   }
 
   if (isLoading) {

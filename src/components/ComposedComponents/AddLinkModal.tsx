@@ -1,12 +1,13 @@
-import {useFormik} from 'formik';
+import {Form, useFormik, Formik} from 'formik';
 import * as Yup from 'yup';
-import {CreateLinkI, ResponseErrorI} from './interfaces';
+import {CreateLinkI, ResponseErrorI} from '../interfaces';
 import React from 'react';
 import Modal from 'react-modal';
-import {addLinkReq} from '../api/requests';
+import {addLinkReq} from '../../api/requests';
 import {useMutation} from 'react-query';
 import {toast} from 'react-toastify';
-import {queryClient} from '../App';
+import {queryClient} from '../../App';
+import {FormInput} from '../Input';
 
 
 interface AddLinkModalPropsI {
@@ -66,44 +67,44 @@ export const AddLinkModal = ({modalIsOpen, afterOpenModal, closeModal, customSty
         ariaHideApp={false}
         contentLabel="Example Modal"
       >
-        <h5>Create new link</h5>
 
-        <form onSubmit={formik.handleSubmit}>
-          <div className="d-flex w-100 mt-3 justify-content-between flex-column">
-            <label className='mt-3' htmlFor="linkName">Link name</label>
-            <input
-              className='mt-3'
-              id="linkName"
-              name="linkName"
-              type="text"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.linkName}
-            />
-            {formik.touched.linkName && formik.errors.linkName ? (
-              <div>{formik.errors.linkName}</div>
-            ) : null}
-            <label className='mt-3' htmlFor="linkUrl">Link url</label>
-            <input
-              className='mt-3'
-              id="linkUrl"
-              type="text"
-              name="linkUrl"
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              value={formik.values.linkUrl}
-            />
-            {formik.touched.linkUrl && formik.errors.linkUrl ? (
-              <div>{formik.errors.linkUrl}</div>
-            ) : null}
-          </div>
+        <Formik
+          initialValues= {{
+            linkName: '',
+            linkUrl: '',
+          }}
+          validationSchema = {Yup.object({
+            linkName: Yup.string()
+                .max(50, 'Must be a string')
+                .required('Required'),
+            linkUrl: Yup.string()
+                .url('Must be a valid url')
+                .required('Required'),
+          })}
+          onSubmit= {(values) => {
+            const newLink: CreateLinkI = {
+              ...values,
+              project: projectId,
+            };
+            addLinkMutation.mutate(newLink);
+          }}
+        >
+          <Form>
+            <h5>Create new link</h5>
+            <div className="d-flex w-100 mt-3 justify-content-between flex-column">
 
-          <div className="d-flex w-100 justify-content-between m-2">
-            <button onClick={closeModal} type="button" className="btn btn btn-danger">Close</button>
-            <button type="submit" className="btn btn-success">Create link</button>
-          </div>
+              <FormInput className='mt-3' name="linkName" label ='linkName' type='text'/>
+              <FormInput className='mt-3' name="linkUrl" label ='linkUrl' type='text'/>
+            </div>
 
-        </form>
+            <div className="d-flex w-100 justify-content-between m-2">
+              <button onClick={closeModal} type="button" className="btn btn btn-danger">Close</button>
+              <button type="submit" className="btn btn-success">Create link</button>
+            </div>
+          </Form>
+        </Formik>
+
+
       </Modal>
     </div>
   );
